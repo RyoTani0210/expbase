@@ -24,7 +24,7 @@ def oa_design():
         # print(request.form)
         # test = request.form
         args = dict(request.form)
-        print(f"args:{args}")
+        sys.stderr.write(f"args: {args}\n")
 
         # 因子の名前リストを作る
         def getFactorsAndLevels(args):
@@ -37,7 +37,7 @@ def oa_design():
 
             """
             n = 3 # 因子数の設定値
-            sys.stderr.write(str(args))
+            # sys.stderr.write(str(args))
 
             # factors作成
             # argsにあるfactorに入力された値をリストにする
@@ -54,8 +54,7 @@ def oa_design():
 
             for level_key in levels_key_list:
                 sys.stderr.write(str(args.get(level_key)))
-                levels.append(args.get(level_key)[0].split(","))
-            sys.stderr.write(f"levels: {levels}\n")
+                levels.append(args.get(level_key).split(",")) #Flaskサーバで直接レスポンスを受け取る場合、文字列がリストに入ってくるので、index指定の[0]が必要(HerokuやDockerのほうに合わせている)            # sys.stderr.write(f"levels: {levels}\n")
             return factors, levels
         
         def makeOaDesign(factors, levels):
@@ -66,7 +65,7 @@ def oa_design():
             """
             # STEP１：R にわたすリストと値を作る
             # factorのlabel数と水準数別
-            sys.stderr.write(f"levels: {levels}")
+            # sys.stderr.write(f"levels: {levels}")
             nlevels = [ len(lvs) for lvs in levels ]
 
             # STEP2: R内で計画を作成する
@@ -149,12 +148,10 @@ def oa_design():
         factors, levels = getFactorsAndLevels(args)
         oa_design = makeOaDesign(factors,levels)
         
-        sys.stderr.write(f"array size: {oa_design.shape}")
+        sys.stderr.write(f"Oa_Design size: {oa_design.shape}\n")
 
         res = makeResponse(oa_design)
         return res
-
-        # ファイル化しない(本仕様)
 
 
 
