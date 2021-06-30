@@ -37,8 +37,10 @@ def oa_design():
 
             """
             n = 3 # 因子数の設定値
+            sys.stderr.write(str(args))
 
             # labels作成
+            # argsにあるlabelに入力された値をリストにする
             labels = []
             labels_key_list = [ f'factor{i}_label' for i in range(1, 1 + n, 1)]
             for label_key in labels_key_list:
@@ -46,33 +48,39 @@ def oa_design():
             # print(labels)
 
             # levels作成
+            # levelsに入力された値を、コンマ区切りで切って要素を取得する
             levels = []
             levels_key_list = [ f'factor{i}_lvs' for i in range(1, 1 + n, 1)]
+
             for level_key in levels_key_list:
-                levels.append(args.get(level_key)[0].split(","))
-            # print(levels)
+                levels.append(args.get(level_key).split(","))
+            sys.stderr.write(f"levels: {levels}\n")
             return labels, levels
         
         def makeOaDesign(labels, levels):
             """
             labelsとlevelsのリストをRに渡して、OaDesignを作って、データフレームとして返す関数
-            TODO: 列の名前と値を、入力されたものに置換すること
+            TODO: PypeR意外の選択肢を探したい(Rからのレスポンスが無い場合、pythonのプロセスが停止しない)
+                    デバックなども考えると、エラーメッセージが出るものがいい
             """
             # STEP１：R にわたすリストと値を作る
             # factorのlabel数と水準数別
+            sys.stderr.write(f"levels: {levels}")
             nlevels = [ len(lvs) for lvs in levels ]
 
             # STEP2: R内で計画を作成する
             r = pr.R()
             r.assign("nlevels", nlevels)
+            sys.stderr.write(f"nlevels: {nlevels}")
             r('library("DoE.base")')
+            r("print(length(nlevels))")
             r("table = oa.design(nfactors = length(nlevels), nlevels = nlevels)")
 
             # STEP3: Rから計画を出力する
             oa_design = pd.DataFrame(r.get("table"))
 
             #値の置換処理
-            ## 後からリファクタしやすいように関数化する
+            ## 後からリファクタしやすいように関数化するnle
             def makeValueMap(levels):
                 """
                 arrayの値と元の入力値との対応を返す
@@ -150,6 +158,6 @@ def oa_design():
 
 
 if __name__ == "__main__":
-    #herokuで動作するために、
+    #herokuで動作するために追加
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port,debug=True)
