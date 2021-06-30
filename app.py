@@ -27,25 +27,25 @@ def oa_design():
         print(f"args:{args}")
 
         # 因子の名前リストを作る
-        def getLabelsAndLevels(args):
+        def getFactorsAndLevels(args):
             """
             request.form から、キーが一致する値を取り出して
-            labelsとlevelsのリストとして返す
+            factorsとlevelsのリストとして返す
             ●出力の形式
-            labels = ["因子1_名前","因子２_名前", "因子３_名前"]
+            factors = ["因子1_名前","因子２_名前", "因子３_名前"]
             levels = [[因子１_水準１,因子1_水準2,..],[..],[因子１_水準１,因子1_水準2,..]]
 
             """
             n = 3 # 因子数の設定値
             sys.stderr.write(str(args))
 
-            # labels作成
-            # argsにあるlabelに入力された値をリストにする
-            labels = []
-            labels_key_list = [ f'factor{i}_label' for i in range(1, 1 + n, 1)]
-            for label_key in labels_key_list:
-                labels += args.get(label_key)
-            # print(labels)
+            # factors作成
+            # argsにあるfactorに入力された値をリストにする
+            factors = []
+            factors_key_list = [ f'factor{i}_label' for i in range(1, 1 + n, 1)]
+            for factor_key in factors_key_list:
+                factors += args.get(factor_key)
+            # print(factors)
 
             # levels作成
             # levelsに入力された値を、コンマ区切りで切って要素を取得する
@@ -53,13 +53,14 @@ def oa_design():
             levels_key_list = [ f'factor{i}_lvs' for i in range(1, 1 + n, 1)]
 
             for level_key in levels_key_list:
-                levels.append(args.get(level_key).split(","))
+                sys.stderr.write(str(args.get(level_key)))
+                levels.append(args.get(level_key)[0].split(","))
             sys.stderr.write(f"levels: {levels}\n")
-            return labels, levels
+            return factors, levels
         
-        def makeOaDesign(labels, levels):
+        def makeOaDesign(factors, levels):
             """
-            labelsとlevelsのリストをRに渡して、OaDesignを作って、データフレームとして返す関数
+            factorsとlevelsのリストをRに渡して、OaDesignを作って、データフレームとして返す関数
             TODO: PypeR意外の選択肢を探したい(Rからのレスポンスが無い場合、pythonのプロセスが停止しない)
                     デバックなども考えると、エラーメッセージが出るものがいい
             """
@@ -104,7 +105,7 @@ def oa_design():
 
             # 置換処理
             ## 列名の置換
-            rep_col = dict(zip(oa_design.columns, labels))
+            rep_col = dict(zip(oa_design.columns, factors))
             oa_design = oa_design.rename(columns=rep_col)
             
             ## 値の置換
@@ -145,8 +146,8 @@ def oa_design():
             return page_html
 
         #ここらから直交表をつくる
-        labels, levels = getLabelsAndLevels(args)
-        oa_design = makeOaDesign(labels,levels)
+        factors, levels = getFactorsAndLevels(args)
+        oa_design = makeOaDesign(factors,levels)
         
         sys.stderr.write(f"array size: {oa_design.shape}")
 
