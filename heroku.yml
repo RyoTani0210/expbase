@@ -1,5 +1,4 @@
 build:
   docker:
     web: Dockerfile
-# run:
-  # web: bundle exec puma -C config/puma.rb
+# Procfileを読んでいるので、Runは不要
