@@ -68,7 +68,6 @@ nbformat==5.0.4
 networkx==2.5.1
 notebook==6.0.3
 numpy==1.18.1
-nysol==0.3.8
 openpyxl==3.0.7
 openTSNE==0.6.0
 orange-canvas-core==0.1.20
