@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 import pyper as pr
 import pandas as pd
 import uuid
-import sys
+import sys,os
 
 
 
@@ -150,4 +150,6 @@ def oa_design():
 
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port="5000",debug=True)
+    #herokuで動作するために、
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host="0.0.0.0", port=port,debug=True)
